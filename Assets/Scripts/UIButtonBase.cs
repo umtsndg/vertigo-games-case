@@ -9,9 +9,16 @@ public abstract class UIButtonBase : MonoBehaviour, IPointerClickHandler, IPoint
     protected Image buttonImage;
     private Vector3 originalScale;
 
-    protected virtual void Awake()
+    protected virtual void OnValidate()
     {
-        buttonImage = GetComponent<Image>();
+        if (buttonImage == null)
+        {
+            buttonImage = GetComponent<Image>();
+        }
+    }
+
+    protected virtual void Start()
+    {
         originalScale = transform.localScale;
     }
 
