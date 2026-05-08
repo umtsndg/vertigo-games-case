@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class UIRestartButton : UIButtonBase
+public class UIClaimButton : UIButtonBase
 {
     protected override void OnClickAction()
     {

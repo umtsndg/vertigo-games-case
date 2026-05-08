@@ -6,6 +6,10 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance { get; private set; }
 
+    [Header("Success Screen System")]
+    [SerializeField] private GameObject successOverlay;
+    [SerializeField] private Transform successGridContainer;
+
     [Header("Core References")]
     [SerializeField] private WheelController wheelController;
     [SerializeField] private GameObject losePopupPanel;
@@ -19,7 +23,17 @@ public class GameManager : MonoBehaviour
     [Tooltip("Drag EVERY RewardData asset in your project into this list")]
     [SerializeField] private List<RewardData> masterRewardPool;
 
+    [Header("Currency System")]
+    [SerializeField] private GameObject lobbyPanel;
+    [SerializeField] private TextMeshProUGUI lobbyCashText;
+    [SerializeField] private TextMeshProUGUI lobbyGoldText;
+
+    [Header("Revive System")]
+    [SerializeField] private TextMeshProUGUI reviveButtonText;
+    private int currentReviveCost = 20;
     private int currentZone = 1;
+
+    private bool isSpinning = false;
 
     // We need to store the generated slices so we know what we landed on
     private List<RewardData> currentActiveSlices = new List<RewardData>();
@@ -35,7 +49,54 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        LoadZone(currentZone);
+        UpdateUI();
+        lobbyPanel.SetActive(true); // Turn on the lobby when the game starts           
+    }
+
+
+    private void UpdateUI()
+    {
+        // 1. Update the Lobby Wallet texts
+        if (lobbyCashText != null) lobbyCashText.text = CurrencyManager.Instance.TotalCash.ToString();
+        if (lobbyGoldText != null) lobbyGoldText.text = CurrencyManager.Instance.TotalGold.ToString();
+
+        // 2. Update the Revive Button text
+        if (reviveButtonText != null) reviveButtonText.text = $"REVIVE ({currentReviveCost})";
+    }
+    public bool TryStartWithCash()
+    {
+        if (CurrencyManager.Instance.TotalCash >= 100)
+        {
+            CurrencyManager.Instance.TotalCash -= 100;
+            BeginRun();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private void BeginRun()
+    {
+        lobbyPanel.SetActive(false); // Hide the lobby
+        currentReviveCost = 20; // Reset revive cost for this run
+        UpdateUI();            // Refresh the text to show the missing money
+        LoadZone(currentZone);       // NOW we build the wheel!
+    }
+    public bool TryStartWithGold()
+    {
+        if (CurrencyManager.Instance.TotalGold >= 10)
+        {
+            CurrencyManager.Instance.TotalGold -= 10;
+            BeginRun();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+
     }
 
     private void LoadZone(int zoneNumber)
@@ -79,7 +140,7 @@ public class GameManager : MonoBehaviour
             }
             else if (data.rewardType == RewardType.Weapon || data.rewardType == RewardType.Armor)
             {
-                // Weapon Duplicate Protection!
+                // Weapon Duplicate Protection
                 if (data.rewardType == RewardType.Weapon && collectedAmounts.ContainsKey(data.rewardName))
                     continue; // Skip this weapon, we already own it
 
@@ -144,13 +205,20 @@ public class GameManager : MonoBehaviour
 
     public void TriggerSpin()
     {
-        wheelController.SpinWheel(HandleSpinResult);
+        if (isSpinning) return;
+
+        isSpinning = true;
+
+        // 3. Spin the wheel
+        wheelController.SpinWheel(HandleSpinResult); // Or whatever your HandleResult method is called
     }
 
     private void HandleSpinResult(int winningSliceIndex)
     {
         // Read from our generated runtime list!
         RewardData wonReward = currentActiveSlices[winningSliceIndex];
+
+        isSpinning = false;
 
         if (wonReward.rewardType == RewardType.Bomb)
         {
@@ -194,5 +262,80 @@ public class GameManager : MonoBehaviour
 
         LoadZone(currentZone);
         losePopupPanel.SetActive(false);
+    }
+    public void CashOut()
+    {
+        successOverlay.SetActive(true);
+
+        // Loop through everything you won
+        foreach (var reward in collectedAmounts)
+        {
+            // 1. Add to permanent bank
+            if (reward.Key == "Cash") CurrencyManager.Instance.TotalCash += reward.Value;
+            else if (reward.Key == "Gold") CurrencyManager.Instance.TotalGold += reward.Value;
+
+            // 2. Spawn the visual icon in the success grid
+            UIInventoryItem itemUI = Instantiate(inventoryItemPrefab, successGridContainer);
+
+            // 3. Find the correct picture for this item and set it up!
+            Sprite rewardIcon = GetIconForReward(reward.Key);
+            itemUI.Setup(rewardIcon, reward.Value);
+        }
+
+        UpdateUI();
+    }
+
+    private Sprite GetIconForReward(string itemName)
+    {
+        foreach (var data in masterRewardPool)
+        {
+            if (data.rewardName == itemName) return data.icon;
+        }
+        return null; // Returns nothing if it can't find it
+    }
+
+    public void ExitToLobby()
+    {
+        // 1. Clear the temporary run data
+        collectedAmounts.Clear();
+
+        // 2. Destroy the icons in the success grid so it's empty for next time
+        foreach (Transform child in successGridContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 3. Turn off the game and popups
+        successOverlay.SetActive(false);
+
+        // 4. Hide the Lose screen!
+        losePopupPanel.SetActive(false);
+
+        // 5. Return to the lobby
+        lobbyPanel.SetActive(true);
+    }
+
+    public bool Revive()
+    {
+        // 1. Check if they have enough permanent Gold
+        if (CurrencyManager.Instance.TotalGold >= currentReviveCost)
+        {
+            // 2. Take the gold
+            CurrencyManager.Instance.TotalGold -= currentReviveCost;
+
+            // 3. Double the cost for the *next* time they hit a bomb in this run
+            currentReviveCost *= 2;
+
+            // 4. Hide the lose screen so they can see the wheel again
+            losePopupPanel.SetActive(false);
+
+            // 5. Update the UI text
+            UpdateUI();
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }

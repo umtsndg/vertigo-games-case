@@ -11,7 +11,6 @@ public enum RewardType
     Chest
 }
 
-// This attribute allows you to create instances of this right from the Unity Project window
 [CreateAssetMenu(fileName = "NewRewardData", menuName = "VertigoDemo/Reward Data")]
 public class RewardData : ScriptableObject
 {
