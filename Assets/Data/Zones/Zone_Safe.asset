@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 647f537723b5a8147a81fc86fdfda8d4, type: 3}
   m_Name: Zone_Safe
   m_EditorClassIdentifier: 
-  typeOfZone: 0
+  typeOfZone: 1
   wheelSlices:
   - {fileID: 0}
   - {fileID: 0}

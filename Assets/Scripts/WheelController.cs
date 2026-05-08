@@ -1,5 +1,7 @@
 using UnityEngine;
 using DG.Tweening;
+using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class WheelController : MonoBehaviour
 {
@@ -7,45 +9,69 @@ public class WheelController : MonoBehaviour
     [SerializeField] private Transform wheelVisualTransform;
     [SerializeField] private UIWheelSlice slicePrefab;
 
+    [Header("Wheel Visuals")]
+    [SerializeField] private Image wheelBaseImage;
+    [SerializeField] private Image wheelIndicatorImage;
+
+    [Header("Wheel Sprites")]
+    [SerializeField] private Sprite bronzeBase;
+    [SerializeField] private Sprite bronzeIndicator;
+    [SerializeField] private Sprite silverBase;
+    [SerializeField] private Sprite silverIndicator;
+    [SerializeField] private Sprite goldBase;
+    [SerializeField] private Sprite goldIndicator;
+
     private const int TOTAL_SLICES = 8;
     private const float SLICE_ANGLE = 360f / TOTAL_SLICES;
 
-    public void BuildWheel(ZoneConfiguration zoneData)
+    public void BuildWheel(List<RewardData> generatedSlices, bool isSafe, bool isSuper)
     {
-        // 1. Clear any old slices if we are regenerating
+        // 1. Change the wheel visuals based on the zone!
+        if (isSuper)
+        {
+            wheelBaseImage.sprite = goldBase;
+            wheelIndicatorImage.sprite = goldIndicator;
+        }
+        else if (isSafe)
+        {
+            wheelBaseImage.sprite = silverBase;
+            wheelIndicatorImage.sprite = silverIndicator;
+        }
+        else
+        {
+            wheelBaseImage.sprite = bronzeBase;
+            wheelIndicatorImage.sprite = bronzeIndicator;
+        }
+
+        // 2. Reset rotation and clear old slices
+        wheelVisualTransform.localRotation = Quaternion.identity;
         foreach (Transform child in wheelVisualTransform)
         {
             Destroy(child.gameObject);
         }
 
-        // 2. Spawn exactly 8 slices based on the ScriptableObject
+        // 3. Spawn the new slices
         for (int i = 0; i < TOTAL_SLICES; i++)
         {
             UIWheelSlice newSlice = Instantiate(slicePrefab, wheelVisualTransform);
-
-            // Rotate each slice so they form a perfect circle
             newSlice.transform.localRotation = Quaternion.Euler(0, 0, -i * SLICE_ANGLE);
-
-            // Pass the ScriptableObject data to the slice
-            newSlice.SetupSlice(zoneData.wheelSlices[i]);
+            newSlice.SetupSlice(generatedSlices[i]);
         }
     }
 
-    public void SpinWheel()
+    public void SpinWheel(System.Action<int> onSpinComplete)
     {
-        // Calculate a random rotation (spin 3 to 5 full times, plus a random slice angle)
         int randomSpins = Random.Range(3, 6);
         int targetSliceIndex = Random.Range(0, TOTAL_SLICES);
 
-        float targetAngle = (randomSpins * 360f) + (targetSliceIndex * SLICE_ANGLE);
+        float targetAngle = (randomSpins * 360f) - (targetSliceIndex * SLICE_ANGLE);
 
-        // DOTween magic: Rotate the visual transform, not the root!
         wheelVisualTransform.DORotate(new Vector3(0, 0, -targetAngle), 3f, RotateMode.FastBeyond360)
             .SetEase(Ease.OutQuart)
             .OnComplete(() =>
             {
-                Debug.Log($"Wheel landed on slice index: {targetSliceIndex}");
-                // We will add the logic to claim the reward or explode next!
+                // When the animation is 100% finished, tell the GameManager which slice won
+                onSpinComplete?.Invoke(targetSliceIndex);
             });
     }
 }
