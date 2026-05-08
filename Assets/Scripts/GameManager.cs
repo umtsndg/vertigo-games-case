@@ -28,6 +28,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI lobbyCashText;
     [SerializeField] private TextMeshProUGUI lobbyGoldText;
 
+    [Header("Main Game UI")]
+    [SerializeField] private TextMeshProUGUI gameCashValue;
+    [SerializeField] private TextMeshProUGUI gameGoldValue;
+
     [Header("Revive System")]
     [SerializeField] private TextMeshProUGUI reviveButtonText;
     private int currentReviveCost = 20;
@@ -56,11 +60,18 @@ public class GameManager : MonoBehaviour
 
     private void UpdateUI()
     {
-        // 1. Update the Lobby Wallet texts
-        if (lobbyCashText != null) lobbyCashText.text = CurrencyManager.Instance.TotalCash.ToString();
-        if (lobbyGoldText != null) lobbyGoldText.text = CurrencyManager.Instance.TotalGold.ToString();
+        string cashStr = CurrencyManager.Instance.TotalCash.ToString();
+        string goldStr = CurrencyManager.Instance.TotalGold.ToString();
 
-        // 2. Update the Revive Button text
+        // Update Lobby
+        if (lobbyCashText != null) lobbyCashText.text = cashStr;
+        if (lobbyGoldText != null) lobbyGoldText.text = goldStr;
+
+        // Update Main Game 
+        if (gameCashValue != null) gameCashValue.text = cashStr;
+        if (gameGoldValue != null) gameGoldValue.text = goldStr;
+
+        // Update Revive Button
         if (reviveButtonText != null) reviveButtonText.text = $"REVIVE ({currentReviveCost})";
     }
     public bool TryStartWithCash()
@@ -255,12 +266,8 @@ public class GameManager : MonoBehaviour
 
     public void RestartGame()
     {
-        currentZone = 1;
-        collectedAmounts.Clear();
-        foreach (var uiItem in inventoryUIElements.Values) Destroy(uiItem.gameObject);
-        inventoryUIElements.Clear();
-
-        LoadZone(currentZone);
+        ResetRunData(); // Clears all UI and data
+        LoadZone(currentZone); // Starts fresh at Zone 1
         losePopupPanel.SetActive(false);
     }
     public void CashOut()
@@ -296,23 +303,11 @@ public class GameManager : MonoBehaviour
 
     public void ExitToLobby()
     {
-        // 1. Clear the temporary run data
-        collectedAmounts.Clear();
-
-        // 2. Destroy the icons in the success grid so it's empty for next time
-        foreach (Transform child in successGridContainer)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // 3. Turn off the game and popups
+        ResetRunData(); // Clears all UI and data
         successOverlay.SetActive(false);
-
-        // 4. Hide the Lose screen!
         losePopupPanel.SetActive(false);
-
-        // 5. Return to the lobby
         lobbyPanel.SetActive(true);
+        UpdateUI();
     }
 
     public bool Revive()
@@ -337,5 +332,28 @@ public class GameManager : MonoBehaviour
         {
             return false;
         }
+    }
+
+    private void ResetRunData()
+    {
+        // 1. Clear the data dictionaries
+        collectedAmounts.Clear();
+        inventoryUIElements.Clear();
+
+        // 2. Physically destroy icons in the Main Game Grid
+        foreach (Transform child in inventoryContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 3. Physically destroy icons in the Success Popup Grid
+        foreach (Transform child in successGridContainer)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // 4. Reset game state variables
+        currentZone = 1;
+        currentReviveCost = 20;
     }
 }
