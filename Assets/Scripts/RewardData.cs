@@ -3,8 +3,12 @@ using UnityEngine;
 public enum RewardType
 {
     Currency,
-    Item,
-    Bomb
+    ItemPoint,
+    Bomb,
+    Weapon,
+    Consumable,
+    Armor,
+    Chest
 }
 
 // This attribute allows you to create instances of this right from the Unity Project window

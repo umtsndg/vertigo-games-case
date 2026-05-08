@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1e948bf2302a624e95391b3c9504cad, type: 3}
-  m_Name: Reward_Coins_Small
+  m_Name: Reward_Grenade_M26
   m_EditorClassIdentifier: 
-  rewardType: 0
-  rewardName: Reward_Coins_Small
-  amount: 100
-  icon: {fileID: 0}
+  rewardType: 4
+  rewardName: M26 Grenade
+  amount: 10
+  icon: {fileID: 21300000, guid: 164210c6de723d74e992e7e15a2d1a33, type: 3}

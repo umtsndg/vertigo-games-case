@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 647f537723b5a8147a81fc86fdfda8d4, type: 3}
+  m_Name: Zone_Normal_Level1
+  m_EditorClassIdentifier: 
+  typeOfZone: 0
+  wheelSlices:
+  - {fileID: 11400000, guid: 309c2f1866e3cce479f71b64e1eed639, type: 2}
+  - {fileID: 11400000, guid: 14741d1ba704d7b42bcf65eeaa77101a, type: 2}
+  - {fileID: 11400000, guid: b60127645417c494db8310a3687d2e56, type: 2}
+  - {fileID: 11400000, guid: ac8fecc9e08d0f04a9bbc46d558c14b0, type: 2}
+  - {fileID: 11400000, guid: de1fa0571e85f66478c6c45144e5e108, type: 2}
+  - {fileID: 11400000, guid: 8b312c32ce386284fbd92b932e01e1c6, type: 2}
+  - {fileID: 11400000, guid: 17b708ab9442f8146a6cd08f2ed8aebb, type: 2}
+  - {fileID: 11400000, guid: 700ca3a97e28e644d985329805c8189c, type: 2}

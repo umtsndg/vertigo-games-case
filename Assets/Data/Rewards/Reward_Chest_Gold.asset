@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e1e948bf2302a624e95391b3c9504cad, type: 3}
-  m_Name: Reward_Bone
+  m_Name: Reward_Chest_Gold
   m_EditorClassIdentifier: 
-  rewardType: 2
-  rewardName: Reward_Bomb
-  amount: 0
-  icon: {fileID: 0}
+  rewardType: 6
+  rewardName: Gold Chest
+  amount: 1
+  icon: {fileID: 21300000, guid: 4d1fdc6fe85e5be498f05d3839ee1771, type: 3}
