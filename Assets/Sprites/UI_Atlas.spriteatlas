@@ -34,6 +34,7 @@ SpriteAtlas:
     packables:
     - {fileID: 102900000, guid: 7fa5f38281028c849a366d56bfcf4340, type: 3}
     - {fileID: 102900000, guid: 958494ce083384143a6334dae37c1dca, type: 3}
+    - {fileID: 2800000, guid: 71d86b97a3c21af4ca602e14632e883c, type: 3}
     bindAsDefault: 1
     isAtlasV2: 0
     cachedData: {fileID: 0}
@@ -61,6 +62,7 @@ SpriteAtlas:
   - {fileID: 21300000, guid: 164210c6de723d74e992e7e15a2d1a33, type: 3}
   - {fileID: 21300000, guid: 414c71d698cc9b64cb7db171eef2c4bc, type: 3}
   - {fileID: 21300000, guid: 50ffab87038f79a4dabd445ffff34023, type: 3}
+  - {fileID: 21300000, guid: 71d86b97a3c21af4ca602e14632e883c, type: 3}
   - {fileID: 21300000, guid: 3b1f9bc7251c5ff49a3110a551f73505, type: 3}
   - {fileID: 21300000, guid: c6ab27e7ba8911d4d89881335f2521f6, type: 3}
   - {fileID: 21300000, guid: 5b9433281924d5b41b803bf641694534, type: 3}
@@ -119,6 +121,7 @@ SpriteAtlas:
   - ui_icon_render_cons_grenade_m26
   - ui_card_zone_map_frame
   - UI_icon_chest_Bronze_nolight
+  - ui_vfx_offer_shine
   - UI_icon_chest_silver_nolight
   - UI_Icons_SMG_Points
   - UI_icon_chest_standart_nolight
